@@ -1,9 +1,12 @@
 ﻿using SDL2;
 using System;
+using static System.Runtime.CompilerServices.RuntimeHelpers;
 
 IntPtr window;
 IntPtr renderer;
 bool running = true;
+int camera_offset_x = 0;
+int camera_offset_y = 0;
 
 Setup();
 
@@ -68,6 +71,27 @@ void PollEvents()
             case SDL.SDL_EventType.SDL_QUIT:
                 running = false;
                 break;
+            case SDL.SDL_EventType.SDL_KEYDOWN:
+                switch (e.key.keysym.sym)
+                {
+                    case SDL.SDL_Keycode.SDLK_ESCAPE:
+                        running = false;
+                        break;
+                    case SDL.SDL_Keycode.SDLK_LEFT:
+                        camera_offset_x = camera_offset_x + 5;
+                        break;
+                    case SDL.SDL_Keycode.SDLK_RIGHT:
+                        camera_offset_x = camera_offset_x - 5;
+                        break;
+                    case SDL.SDL_Keycode.SDLK_DOWN:
+                        camera_offset_y = camera_offset_y - 5;
+                        break;
+                    case SDL.SDL_Keycode.SDLK_UP:
+                        camera_offset_y = camera_offset_y + 5;
+                        break;
+                    default: break;
+                }
+                break;
         }
     }
 }
@@ -87,16 +111,16 @@ void Render()
     SDL.SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
 
     // Draw a line from top left to bottom right
-    SDL.SDL_RenderDrawLine(renderer, 0, 0, 640, 480);
+    SDL.SDL_RenderDrawLine(renderer, 0+camera_offset_x, 0 + camera_offset_y, 640 + camera_offset_x, 480+camera_offset_y);
 
     // Draws a point at (20, 20) using the currently set color.
-    SDL.SDL_RenderDrawPoint(renderer, 20, 20);
+    SDL.SDL_RenderDrawPoint(renderer, 20 + camera_offset_x, 20 + camera_offset_y);
 
     // Specify the coordinates for our rectangle we will be drawing.
     var rect = new SDL.SDL_Rect 
     { 
-        x = 300,
-        y = 100,
+        x = 300 + camera_offset_x,
+        y = 100 + camera_offset_y,
         w = 50,
         h = 50
     };
